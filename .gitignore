@@ -4,3 +4,12 @@ Legacy/
 
 # Environment files
 .env
+
+# Python files
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.pth
+*.pt
+*.zip

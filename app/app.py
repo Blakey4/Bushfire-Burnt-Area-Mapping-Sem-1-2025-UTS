@@ -7,12 +7,17 @@ import torch
 import numpy as np
 from torchvision import transforms
 from PIL import Image
-from model import UNet  
 from skimage import morphology 
 from flask_cors import CORS
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+from model import UNet
 
 app = Flask(__name__)
 CORS(app)
+
+CLIENT_ID     = os.environ["SENTINEL_CLIENT_ID"]
+CLIENT_SECRET = os.environ["SENTINEL_CLIENT_SECRET"]
 
 FALSE_COLOR_SCRIPT = """
 //VERSION=3
@@ -74,7 +79,7 @@ def build_payload(bbox, date_obj):
 # Load U-Net model once
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = UNet(in_channels=3, out_channels=1)
-model.load_state_dict(torch.load("best_model.pth", map_location=device))
+model.load_state_dict(torch.load("../models/best_model.pth", map_location=device))
 model.to(device).eval()
 
 preprocess = transforms.Compose([
