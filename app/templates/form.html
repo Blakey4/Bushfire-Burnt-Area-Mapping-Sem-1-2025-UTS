@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bushfire U-Net Demo</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  
+  <style>
+    #image-viewer {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .viewer-image-container img {
+      max-height: 80vh;
+      max-width: 45vw;
+    }
+    
+    @media (max-width: 768px) {
+      .viewer-image-container img {
+        max-width: 90vw;
+      }
+    }
+    
+    /* Custom scrollbar for sidebar */
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    
+    /* Custom map controls */
+    .leaflet-draw-toolbar .leaflet-draw-draw-rectangle {
+      background-image: none !important;
+    }
+    
+    .leaflet-draw-toolbar a {
+      background-color: white !important;
+      border-radius: 4px !important;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.15) !important;
+    }
+    
+    .leaflet-draw-toolbar a:hover {
+      background-color: #f8f9fa !important;
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+  <div class="flex h-screen overflow-hidden">
+    <div id="map" class="flex-1 z-0"></div>
+    
+    <div class="w-[30vw] bg-white border-l border-gray-200 shadow-lg flex flex-col">
+      <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-600 to-primary-700">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-white">
+            <i class="fas fa-fire mr-2"></i> Bushfire Segmentation
+          </h2>
+          <span class="text-xs bg-primary-800 text-primary-100 px-2 py-1 rounded-full">U-Net Demo</span>
+        </div>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto sidebar-scroll p-6 space-y-6">
+        <div class="space-y-2">
+          <label for="date-picker" class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-calendar-alt mr-2 text-primary-600"></i> Select Date
+          </label>
+          <div class="relative">
+            <input type="date" id="date-picker" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 shadow-sm" />
+            <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-map-marked-alt mr-2 text-primary-600"></i> Area of Interest
+          </label>
+          <button id="select-aoi" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition duration-150 ease-in-out flex items-center justify-center">
+            <i class="fas fa-draw-polygon mr-2"></i> Select on Map
+          </button>
+        </div>
+        
+        <button id="submit-btn" class="w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out flex items-center justify-center">
+          <i class="fas fa-rocket mr-2"></i> Run Segmentation
+        </button>
+        
+        <div id="result" class="space-y-4"></div>
+      </div>
+      
+      <div class="px-6 py-3 border-t border-gray-200 bg-gray-50 text-xs text-gray-500">
+        <div class="flex items-center justify-between">
+          <span>Bushfire U-Net Demo</span>
+          <span>v1.0.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="image-viewer" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div id="image-viewer-content" class="flex flex-wrap justify-center gap-8 p-4 max-w-[90%] max-h-[90%]">
+      <div class="viewer-image-container flex flex-col items-center">
+        <div class="viewer-label text-white font-medium text-lg mb-2">Raw Satellite Image</div>
+        <img id="viewer-img-1" src="" alt="Satellite Image" class="border-2 border-white rounded-lg cursor-pointer" />
+      </div>
+      <div class="viewer-image-container flex flex-col items-center">
+        <div class="viewer-label text-white font-medium text-lg mb-2">Segmentation Overlay</div>
+        <img id="viewer-img-2" src="" alt="Overlay Image" class="border-2 border-white rounded-lg cursor-pointer" />
+      </div>
+    </div>
+    
+    <button class="absolute top-4 right-4 text-white hover:text-gray-200 transition duration-150">
+      <i class="fas fa-times text-2xl"></i>
+    </button>
+  </div>
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  
+  <script>
+    const map = L.map('map').setView([-33.8688, 151.2093], 10);
+    
+    // Define basemaps
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    });
+
+    const sixMapsAerial = L.tileLayer('https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Imagery © NSW Spatial Services'
+    });
+
+    const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics'
+    });
+
+    // Add default basemap
+    osm.addTo(map);
+
+    // Add layer control
+    const baseLayers = {
+      "OSM Standard": osm,
+      "Six Maps Aerial": sixMapsAerial,
+      "Satellite Imagery": satellite
+    };
+
+    L.control.layers(baseLayers).addTo(map);
+
+    const drawnItems = new L.FeatureGroup().addTo(map);
+    const rectangleDrawer = new L.Draw.Rectangle(map, {
+      shapeOptions: { color: '#2563eb', weight: 2, fillOpacity: 0.2 }
+    });
+
+    let lastBounds = null;
+
+    document.getElementById('select-aoi').onclick = () => {
+      drawnItems.clearLayers();
+      lastBounds = null;
+      rectangleDrawer.enable();
+      
+      // Show toast notification
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center';
+      toast.innerHTML = '<i class="fas fa-info-circle mr-2"></i> Draw a rectangle on the map to select area';
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    };
+
+    map.on(L.Draw.Event.CREATED, e => {
+      drawnItems.addLayer(e.layer);
+      lastBounds = e.layer.getBounds();
+      rectangleDrawer.disable();
+    });
+
+    document.getElementById('submit-btn').onclick = async () => {
+      const resultDiv = document.getElementById('result');
+      const date = document.getElementById('date-picker').value;
+
+      if (!lastBounds) {
+        resultDiv.innerHTML = `
+          <div class="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              <span>Please select an Area of Interest first.</span>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const sw = lastBounds.getSouthWest(), ne = lastBounds.getNorthEast();
+      const bbox = [sw.lng, sw.lat, ne.lng, ne.lat];
+
+      resultDiv.innerHTML = `
+        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center justify-center">
+          <div class="animate-spin mr-3 text-blue-600">
+            <i class="fas fa-circle-notch"></i>
+          </div>
+          <span class="text-blue-800">Loading prediction...</span>
+        </div>
+      `;
+
+      try {
+        const resp = await fetch(window.location.origin + '/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date, bbox })
+        });
+
+        const data = await resp.json();
+        if (resp.status !== 200) throw new Error(data.error || resp.statusText);
+
+        resultDiv.innerHTML = `
+          <div class="space-y-4">
+            <div class="border-b border-gray-200 pb-2">
+              <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                <i class="fas fa-satellite-dish text-primary-600 mr-2"></i> Raw Satellite Image
+              </h3>
+            </div>
+            <img id="sat-img" src="${data.sat_image}" alt="Satellite Image" class="w-full rounded-lg border border-gray-200 shadow-sm cursor-zoom-in hover:shadow-md transition duration-150" />
+            
+            <div class="border-b border-gray-200 pb-2">
+              <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                <i class="fas fa-fire text-red-600 mr-2"></i> Segmentation Overlay
+              </h3>
+            </div>
+            <img id="overlay-img" src="${data.overlay}" alt="Overlay Image" class="w-full rounded-lg border border-gray-200 shadow-sm cursor-zoom-in hover:shadow-md transition duration-150" />
+          </div>
+        `;
+
+        // Add zoom viewer
+        const img1 = document.getElementById('sat-img');
+        const img2 = document.getElementById('overlay-img');
+
+        [img1, img2].forEach(img => {
+          img.addEventListener('click', () => {
+            document.getElementById('viewer-img-1').src = data.sat_image;
+            document.getElementById('viewer-img-2').src = data.overlay;
+            document.getElementById('image-viewer').style.display = 'flex';
+          });
+        });
+
+      } catch (err) {
+        resultDiv.innerHTML = `
+          <div class="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              <span>Error: ${err.message}</span>
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    // Global key and click handlers
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'escape') {
+        document.getElementById('image-viewer').style.display = 'none';
+      }
+    });
+
+    document.getElementById('image-viewer').addEventListener('click', () => {
+      document.getElementById('image-viewer').style.display = 'none';
+    });
+
+    document.getElementById('image-viewer-content').addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    
+    // Close button for image viewer
+    document.querySelector('#image-viewer button').addEventListener('click', () => {
+      document.getElementById('image-viewer').style.display = 'none';
+    });
+  </script>
+</body>
+</html>

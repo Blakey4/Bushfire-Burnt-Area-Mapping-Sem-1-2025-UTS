@@ -1,4 +1,6 @@
-Legacy/
-
 # Temporaroyy files
 _review-drafts/
+Legacy/
+
+# Environment files
+.env
