@@ -4,11 +4,11 @@ Semantic segmentation of burnt areas in Australian bushfires from Sentinel-2 sat
 
 > **Context:** This was our first introduction to and built deep learning project, built for a university subject (UTS, Deep Learning & CNNs, 2025) where we were introduced to deep learning for the first time properly. Instead of using a simple existing dataset/problem for the sake of learning we wanted to take ona mroe ambitious project. We chose to attempt to build a deep learning model for accurately mapping the burn scars of bushfires in Australia. We quickly realised that there was no existing public machine learning ready dataset for this task so the biggest obstacle to our project was sourcing and effectively labelling enough imagery of bushfires before trying to train a model at all. This biggest effort of this project became data prepration and preprocessing and all the issues that came with it. We had about ~7-8 weeks from start to finish.
 
-What we built was a complete end to end pipeline — from hand-labelling our own dataset through to a working demo — and it also has real, documented limitations. I've kept it honest rather than polishing over the rough edges; the [What I'd do differently](#what-id-do-differently) section is part of the point. We are proud of what were able to build from scratch within the time we had and the skills we learnt, particularly with data prepartion and processing.
+What we built was a complete end to end pipeline (from hand-labelling our own dataset through to a working demo) and it also has real, documented limitations. I've kept it honest rather than polishing over the rough edges; the [What I'd do differently](#what-id-do-differently) section is part of the point. We are proud of what were able to build from scratch within the time we had and the skills we learnt, particularly with data preparation and processing.
 
 This project was selected and showcased at the UTS Tech Festival in 2025. You can find the project report and the presentation here:
-Report: docs/report.pdf
 
+Report: docs/report.pdf
 Presentation: https://www.figma.com/deck/3dS7tllxgHeMzR4ugr1EmB
 
 ---
@@ -112,17 +112,12 @@ The ~4,800-image annotated dataset isn't committed (89 MB of zips). Download lin
 
 Being honest about the limitations, since this was a learning project:
 
-- **Dataset consistency** — annotating burn boundaries by hand across three people introduced label noise; a shared annotation guideline and inter-annotator checks would help.
+- **Dataset consistency** — annotating burn boundaries by hand across three people introduced label noise; a shared annotation guideline and inter-annotator checks would have helped a lot.
 - **Smoke and cloud** — the model conflates smoke/cloud with burn scars. Adding a cloud mask (e.g. Sentinel-2 SCL band) as input or a filtering step would reduce false positives.
 - **Old vs. active burns** — false-colour alone can't always separate a fresh burn from an ancient scar; multi-temporal input (before/after pairs) would give the model the change signal it's missing.
-- **Metrics** — IoU/Dice around 0.67 is a reasonable first result but leaves clear headroom; a Dice or combined BCE+Dice loss, and more/cleaner data, would be the obvious next levers.
-- **Engineering** — the original code duplicated the model definition and hardcoded API keys; this repo fixes both.
+- **Metrics** — IoU/Dice around 0.67 is a reasonable first result but leaves clear headroom; a Dice or combined BCE+Dice loss, and more/cleaner data, would be the obvious next levers. The poor accuracy comes down primarily to preprocessing mistakes we made during the project.
 
 Future directions we noted in the report: transfer learning from a pretrained encoder, and incorporating aerial linescan imagery alongside the satellite data.
-
-## Report & presentation
-
-The full academic report is in [`docs/report.pdf`](docs/report.pdf).
 
 ## Team
 
