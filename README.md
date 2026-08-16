@@ -2,6 +2,10 @@
 
 Semantic segmentation of burnt areas in Australian bushfires from Sentinel-2 satellite imagery, using a U-Net convolutional neural network. Includes a Flask web app that pulls live Sentinel-2 tiles and overlays the model's predicted burn boundary.
 
+<img width="1993" height="1240" alt="image" src="https://github.com/user-attachments/assets/dcff0573-8673-4e79-a0b0-304f2a431f6a" />
+
+
+
 > **Context:** This was our first introduction to and built deep learning project, built for a university subject (UTS, Deep Learning & CNNs, 2025) where we were introduced to deep learning for the first time properly. Instead of using a simple existing dataset/problem for the sake of learning we wanted to take ona mroe ambitious project. We chose to attempt to build a deep learning model for accurately mapping the burn scars of bushfires in Australia. We quickly realised that there was no existing public machine learning ready dataset for this task so the biggest obstacle to our project was sourcing and effectively labelling enough imagery of bushfires before trying to train a model at all. This biggest effort of this project became data prepration and preprocessing and all the issues that came with it. We had about ~7-8 weeks from start to finish.
 
 What we built was a complete end to end pipeline (from hand-labelling our own dataset through to a working demo) and it also has real, documented limitations. I've kept it honest rather than polishing over the rough edges; the [What I'd do differently](#what-id-do-differently) section is part of the point. We are proud of what were able to build from scratch within the time we had and the skills we learnt, particularly with data preparation and processing.
@@ -31,6 +35,10 @@ Presentation: https://www.figma.com/deck/3dS7tllxgHeMzR4ugr1EmB
 
 Trained for 25 epochs (early-stopped from a max of 50, patience 5). Validation loss tracked training loss closely, so no significant overfitting. The model delineates clear burn boundaries well; it struggles with smoke/cloud interference and with telling active fires apart from old burn scars.
 
+The results of the model were poor. This was large part due to issues found during the building of the dataset, silly preproecssing mistakes we made and the limited time we had left to build and experiemnt with the mdoel after creating the dataset. We are happy with what we are able to build and learn given this was our first introduction to deep learning and the time constraints we had.
+
+<img width="1335" height="831" alt="image" src="https://github.com/user-attachments/assets/33eadaa7-4621-46f4-973c-b860d60395db" />
+
 <!-- Add a sample prediction image here — it's the single most persuasive thing in the README:
 ![Sample prediction](docs/figures/sample_prediction.png)
 -->
@@ -45,6 +53,22 @@ No suitable labelled dataset existed, so we made one:
 - Exported in a Pascal VOC-style layout (`JPEGImages/`, `SegmentationClass/`, split into `train/` and `val/`).
 
 The annotated dataset and trained weights are not stored in this repo (too large for Git) — see [Data](#data) and [Model weights](#model-weights) for download links.
+
+### The Dataset - Identifying past bushfires with Imagery
+<img width="1464" height="875" alt="image" src="https://github.com/user-attachments/assets/a9f1f592-a92d-4988-8071-ed25014dc6f2" />
+
+<!-- Insert Table of selected bushfires-->
+
+### The Dataset - Downloading Patches from Sentinel Hub's API
+
+<img width="920" height="869" alt="image" src="https://github.com/user-attachments/assets/2b47ae12-90f0-4e95-8e55-5e8dde6662df" />
+
+<img width="1174" height="920" alt="image" src="https://github.com/user-attachments/assets/32cb4992-cea1-41a7-baef-54692cecb553" />
+
+### The Dataset - Annotation / Labelling
+
+<img width="1839" height="717" alt="image" src="https://github.com/user-attachments/assets/2f3902fd-db86-4eaf-80a5-393296772971" />
+
 
 ## Model
 
