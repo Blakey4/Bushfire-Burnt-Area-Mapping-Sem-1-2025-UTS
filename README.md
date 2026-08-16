@@ -12,8 +12,8 @@ What we built was a complete end to end pipeline (from hand-labelling our own da
 
 This project was selected and showcased at the UTS Tech Festival in 2025. You can find the project report and the presentation here:
 
-Report: docs/report.pdf
-Presentation: https://www.figma.com/deck/3dS7tllxgHeMzR4ugr1EmB
+**Project Report:** docs/report.pdf <br>
+**Presentation:** https://www.figma.com/deck/3dS7tllxgHeMzR4ugr1EmB
 
 ---
 
@@ -95,10 +95,9 @@ We used a small script to split the selected regions into the smaller patches an
 <img width="1174" height="920" alt="image" src="https://github.com/user-attachments/assets/32cb4992-cea1-41a7-baef-54692cecb553" />
 
 ### The Dataset - Annotation / Labelling
-The patches were annotated for segmentation in CVAT. We split of the imagery so that each of us annotated ~814 patches each (2442 in total). For the annotations we used binary masks with either 'burnt' or 'unburnt' masks. As discussed in the 'What I'd do differently section', one of later problems we encountered during the labelling was the existence of burn scars from the previous bushfire season that were still partly visible and served to confuse the model. In hindsight we know realise we should have had a third label to mask these out seperately. The image below shows some of this process.
+The patches were annotated for segmentation in CVAT. We split of the imagery so that each of us annotated ~814 patches each (2442 in total). For the annotations we used binary masks with either 'burnt' or 'unburnt' masks. As discussed in the [What I'd do differently](#what-id-do-differently) section, one of later problems we encountered during the labelling was the existence of burn scars from the previous bushfire season that were still partly visible and served to confuse the model. In hindsight we know realise we should have had a third label to mask these out seperately. The image below shows some of this process.
 
 <img width="1839" height="717" alt="image" src="https://github.com/user-attachments/assets/2f3902fd-db86-4eaf-80a5-393296772971" />
-
 
 ## Model
 
