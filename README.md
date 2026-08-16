@@ -35,7 +35,7 @@ Presentation: https://www.figma.com/deck/3dS7tllxgHeMzR4ugr1EmB
 
 Trained for 25 epochs (early-stopped from a max of 50, patience 5). Validation loss tracked training loss closely, so no significant overfitting. The model delineates clear burn boundaries well; it struggles with smoke/cloud interference and with telling active fires apart from old burn scars.
 
-The results of the model were poor. This was large part due to issues found during the building of the dataset, silly preproecssing mistakes we made and the limited time we had left to build and experiemnt with the mdoel after creating the dataset. We are happy with what we are able to build and learn given this was our first introduction to deep learning and the time constraints we had.
+The results of the model were poor. This was large part due to issues found during the building of the dataset, silly preproecssing mistakes we made and the limited time we had left to build and experiemnt with the mdoel after creating the dataset. We are happy with what we are able to build and learn given this was our first introduction to deep learning and the time constraints we had. We believe the most significant part of this project wasn't the model itself, which has much room for improvement, but the machine learning ready dataset we created and processed from scratch as no public dataset exists for Australia.
 
 <img width="1431" height="624" alt="image" src="https://github.com/user-attachments/assets/f1bb60db-8809-419c-a252-b531c559774e" />
 
@@ -85,12 +85,17 @@ Most of the imagery we decided to use construct our dataset was from the 2019-20
 <!-- Insert Table of selected bushfires-->
 
 ### The Dataset - Downloading Patches from Sentinel Hub's API
+The next step was to split these larger regions of bushfires into smaller patches of a sufficient size for effective annotation and for machine learning. We chose to 1028 x 1028 px patches (effective 10.28 km squared with S2's resolution) as this provided the best balance with enough surrounding context for us to easily annotate the masks/burnt area of each fire manually. The model itself was later trained on 512 px size patches from these.
 
 <img width="920" height="869" alt="image" src="https://github.com/user-attachments/assets/2b47ae12-90f0-4e95-8e55-5e8dde6662df" />
+
+
+We used a small script to split the selected regions into the smaller patches and then used this collection of bounding boxes to call the Sentinel Hub API to download all of the images for the dataset. The image below shows of these smaller patches for the NSW and Vic fires:
 
 <img width="1174" height="920" alt="image" src="https://github.com/user-attachments/assets/32cb4992-cea1-41a7-baef-54692cecb553" />
 
 ### The Dataset - Annotation / Labelling
+The patches were annotated for segmentation in CVAT. We split of the imagery so that each of us annotated ~814 patches each (2442 in total). For the annotations we used binary masks with either 'burnt' or 'unburnt' masks. As discussed in the 'What I'd do differently section', one of later problems we encountered during the labelling was the existence of burn scars from the previous bushfire season that were still partly visible and served to confuse the model. In hindsight we know realise we should have had a third label to mask these out seperately. The image below shows some of this process.
 
 <img width="1839" height="717" alt="image" src="https://github.com/user-attachments/assets/2f3902fd-db86-4eaf-80a5-393296772971" />
 
