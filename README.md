@@ -6,9 +6,9 @@ Semantic segmentation of burnt areas in Australian bushfires from Sentinel-2 sat
 
 
 
-> **Context:** This was our first introduction to and built deep learning project, built for a university subject (UTS, Deep Learning & CNNs, 2025) where we were introduced to deep learning for the first time properly. Instead of using a simple existing dataset/problem for the sake of learning we wanted to take ona mroe ambitious project. We chose to attempt to build a deep learning model for accurately mapping the burn scars of bushfires in Australia. We quickly realised that there was no existing public machine learning ready dataset for this task so the biggest obstacle to our project was sourcing and effectively labelling enough imagery of bushfires before trying to train a model at all. This biggest effort of this project became data prepration and preprocessing and all the issues that came with it. We had about ~7-8 weeks from start to finish.
+> **Context:** This was our first introduction to and built deep learning project, built for a university subject (UTS, Deep Learning & CNNs, 2025) where we were introduced to deep learning for the first time properly. Instead of using a simple existing dataset/problem for the sake of learning we wanted to take on a more ambitious project. We chose to attempt to build a deep learning model for accurately mapping the burn scars of bushfires in Australia. We quickly realised that there was no existing public machine learning ready dataset for this task so the biggest obstacle to our project was sourcing and effectively labelling enough imagery of bushfires before trying to train a model at all. The biggest effort of this project became data preparation and preprocessing and all the issues that came with it. We had about ~7-8 weeks from start to finish.
 
-What we built was a complete end to end pipeline (from hand-labelling our own dataset through to a working demo) and it also has real, documented limitations. I've kept it honest rather than polishing over the rough edges; the [What I'd do differently](#what-id-do-differently) section is part of the point. We are proud of what were able to build from scratch within the time we had and the skills we learnt, particularly with data preparation and processing.
+What we built was a complete end to end pipeline (from hand-labelling our own dataset through to a working demo) and it also has real, documented limitations. I've kept it honest rather than polishing over the rough edges; the [What I'd do differently](#what-id-do-differently) section is part of the point. We are proud of what we were able to build from scratch within the time we had and the skills we learnt, particularly with data preparation and processing.
 
 This project was selected and showcased at the UTS Tech Festival in 2025. You can find the project report and the presentation here:
 
@@ -35,13 +35,9 @@ This project was selected and showcased at the UTS Tech Festival in 2025. You ca
 
 Trained for 25 epochs (early-stopped from a max of 50, patience 5). Validation loss tracked training loss closely, so no significant overfitting. The model delineates clear burn boundaries well; it struggles with smoke/cloud interference and with telling active fires apart from old burn scars.
 
-The results of the model were poor. This was large part due to issues found during the building of the dataset, silly preproecssing mistakes we made and the limited time we had left to build and experiemnt with the mdoel after creating the dataset. We are happy with what we are able to build and learn given this was our first introduction to deep learning and the time constraints we had. We believe the most significant part of this project wasn't the model itself, which has much room for improvement, but the machine learning ready dataset we created and processed from scratch as no public dataset exists for Australia.
+The results of the model were a decent initial baseline but had clear room for improvement. This was large part due to issues found during the building of the dataset, silly preprocessing mistakes we made and the limited time we had left to build and experiment with the model after creating the dataset. We are happy with what we are able to build and learn given this was our first deep learning project and the time constraints we had. We believe the most significant part of this project wasn't the model itself, which has much room for improvement, but the machine learning ready dataset we created and processed from scratch as no public dataset exists for Australia.
 
 <img width="1431" height="624" alt="image" src="https://github.com/user-attachments/assets/f1bb60db-8809-419c-a252-b531c559774e" />
-
-<!-- Add a sample prediction image here — it's the single most persuasive thing in the README:
-![Sample prediction](docs/figures/sample_prediction.png)
--->
 
 ## The dataset (built from scratch)
 
@@ -55,7 +51,7 @@ No suitable labelled dataset existed, so we made one:
 The annotated dataset and trained weights are not stored in this repo (too large for Git) — see [Data](#data) and [Model weights](#model-weights) for download links.
 
 ### The Dataset - Identifying past bushfires with Imagery
-To create our dataset the first step was to compile a list of fires and dates across the country that had Sentinel 2 imagery coverage. In our early research at this stage we found the FY 2019-202 Bushfire Boundaries Dataset and the NSW Operational Bushfire Boundaries Geodatabase. These mapped the final extent / burn scar of previous fires in Australia. As these were final extent maps that did not line up with the exact date/time of sentinel 2 imagery of each of the fires so could not be used to help label the data however we did use them as a spatial reference to pinpoint the location of previous large fires. We then manually viewed Sentinel 2 Imagery of each of the respective areas in Copernicus EO Browser to identify a sample of fires and dates from various states and territories across the east coast that we could use to build our dataset.
+To create our dataset the first step was to compile a list of fires and dates across the country that had Sentinel 2 imagery coverage. In our early research at this stage we found the FY 2019-2020 Bushfire Boundaries Dataset and the NSW Operational Bushfire Boundaries Geodatabase. These mapped the final extent / burn scar of previous fires in Australia. As these were final extent maps that did not line up with the exact date/time of sentinel 2 imagery of each of the fires and therefore could not be used to help label the data, however we did use them as a spatial reference to pinpoint the location of previous large fires. We then manually viewed Sentinel 2 Imagery of each of the respective areas in Copernicus EO Browser to identify a sample of fires and dates from various states and territories across the east coast that we could use to build our dataset.
 
 <img width="1464" height="875" alt="image" src="https://github.com/user-attachments/assets/a9f1f592-a92d-4988-8071-ed25014dc6f2" />
 
@@ -85,7 +81,7 @@ Most of the imagery we decided to use construct our dataset was from the 2019-20
 <!-- Insert Table of selected bushfires-->
 
 ### The Dataset - Downloading Patches from Sentinel Hub's API
-The next step was to split these larger regions of bushfires into smaller patches of a sufficient size for effective annotation and for machine learning. We chose to 1028 x 1028 px patches (effective 10.28 km squared with S2's resolution) as this provided the best balance with enough surrounding context for us to easily annotate the masks/burnt area of each fire manually. The model itself was later trained on 512 px size patches from these.
+The next step was to split these larger regions of bushfires into smaller patches of a sufficient size for effective annotation and for machine learning. We chose to 1028 x 1028 px patches (effective 10.28 km² with S2's resolution) as this provided the best balance with enough surrounding context for us to easily annotate the masks/burnt area of each fire manually. The model itself was later trained on 512 px size patches from these.
 
 <img width="920" height="869" alt="image" src="https://github.com/user-attachments/assets/2b47ae12-90f0-4e95-8e55-5e8dde6662df" />
 
@@ -95,7 +91,7 @@ We used a small script to split the selected regions into the smaller patches an
 <img width="1174" height="920" alt="image" src="https://github.com/user-attachments/assets/32cb4992-cea1-41a7-baef-54692cecb553" />
 
 ### The Dataset - Annotation / Labelling
-The patches were annotated for segmentation in CVAT. We split of the imagery so that each of us annotated ~814 patches each (2442 in total). For the annotations we used binary masks with either 'burnt' or 'unburnt' masks. As discussed in the [What I'd do differently](#what-id-do-differently) section, one of later problems we encountered during the labelling was the existence of burn scars from the previous bushfire season that were still partly visible and served to confuse the model. In hindsight we know realise we should have had a third label to mask these out seperately. The image below shows some of this process.
+The patches were annotated for segmentation in CVAT. We split up the imagery so that each of us annotated ~814 patches each (2442 in total). For the annotations we used binary masks with either 'burnt' or 'unburnt' masks. As discussed in the [What I'd do differently](#what-id-do-differently) section, one of the later problems we encountered during the labelling was the existence of burn scars from the previous bushfire season that were still partly visible and served to confuse the model. We now realise we should have had a third label to mask these out separately. The image below shows some of this process.
 
 <img width="1839" height="717" alt="image" src="https://github.com/user-attachments/assets/2f3902fd-db86-4eaf-80a5-393296772971" />
 
@@ -155,7 +151,7 @@ python app/app.py
 
 ## Data
 
-The ~4,800-image annotated dataset isn't committed (89 MB of zips). Download link and the expected VOC-style folder layout are in [`data/README.md`](data/README.md).
+The annotated dataset isn't committed. Download link and the expected VOC-style folder layout are in [`data/README.md`](data/README.md).
 
 ## Model weights
 
