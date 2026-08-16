@@ -37,7 +37,7 @@ Trained for 25 epochs (early-stopped from a max of 50, patience 5). Validation l
 
 The results of the model were poor. This was large part due to issues found during the building of the dataset, silly preproecssing mistakes we made and the limited time we had left to build and experiemnt with the mdoel after creating the dataset. We are happy with what we are able to build and learn given this was our first introduction to deep learning and the time constraints we had.
 
-<img width="1335" height="831" alt="image" src="https://github.com/user-attachments/assets/33eadaa7-4621-46f4-973c-b860d60395db" />
+<img width="1431" height="624" alt="image" src="https://github.com/user-attachments/assets/f1bb60db-8809-419c-a252-b531c559774e" />
 
 <!-- Add a sample prediction image here — it's the single most persuasive thing in the README:
 ![Sample prediction](docs/figures/sample_prediction.png)
@@ -55,7 +55,32 @@ No suitable labelled dataset existed, so we made one:
 The annotated dataset and trained weights are not stored in this repo (too large for Git) — see [Data](#data) and [Model weights](#model-weights) for download links.
 
 ### The Dataset - Identifying past bushfires with Imagery
+To create our dataset the first step was to compile a list of fires and dates across the country that had Sentinel 2 imagery coverage. In our early research at this stage we found the FY 2019-202 Bushfire Boundaries Dataset and the NSW Operational Bushfire Boundaries Geodatabase. These mapped the final extent / burn scar of previous fires in Australia. As these were final extent maps that did not line up with the exact date/time of sentinel 2 imagery of each of the fires so could not be used to help label the data however we did use them as a spatial reference to pinpoint the location of previous large fires. We then manually viewed Sentinel 2 Imagery of each of the respective areas in Copernicus EO Browser to identify a sample of fires and dates from various states and territories across the east coast that we could use to build our dataset.
+
 <img width="1464" height="875" alt="image" src="https://github.com/user-attachments/assets/a9f1f592-a92d-4988-8071-ed25014dc6f2" />
+
+The image above shows the geodatabase used as reference (purple) and the selected regions
+(orange)
+
+Most of the imagery we decided to use construct our dataset was from the 2019-2020 Bushfire Season (with the exception of the 2024/2025 Grampians Fire) as it provided the greatest geographic spread of significant fires since Sentinel 2 Imagery became available. The list of fires regions we chose are listed below. These correspond to the orange boxes in the previous image.
+
+| Fire | State | Dates |
+|---|---|---|
+| Yarrarubula South | New South Wales | 3/01/2020, 13/01/2020 |
+| Woodenbong | Queensland | 16/11/2019 |
+| Torrington | NSW / Queensland | 16/11/2019 |
+| Tambo Complex | Queensland | 29/11/2019 |
+| Northern NSW | New South Wales | 16/11/2019 |
+| Gospers | New South Wales | 21/12/2019, 21/11/2019, 11/11/2019, 1/11/2019, 27/10/2019 |
+| Lower Blue Mountains | New South Wales | 21/12/2019 |
+| Kempsey | New South Wales | 16/11/2019 |
+| Kangaroo Island | South Australia | 31/12/2019, 21/12/2019 |
+| Hanging Rock | New South Wales | 21/12/2019 |
+| Green Valley | NSW / Victoria | 8/01/2020, 3/01/2020 |
+| Grampians | Victoria | 2/01/2025, 25/12/2024, 20/12/2024, 18/12/2024 |
+| Georges Yard | New South Wales | 21/12/2019 |
+| Currowan | New South Wales | 21/12/2019, 1/12/2019 |
+| Bombay Fire | New South Wales | 1/12/2019 |
 
 <!-- Insert Table of selected bushfires-->
 
