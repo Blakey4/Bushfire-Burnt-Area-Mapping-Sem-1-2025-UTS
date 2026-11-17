@@ -170,8 +170,4 @@ Future directions we noted in the report: transfer learning from a pretrained en
 
 ## Team
 
-Built by Sukush Kunwar, **Oliver Revis**, and Francis Clive Fernandes (UTS "Fire Safety Team", 2025).
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+Built by Sukush Kunwar, Oliver Revis, and Francis Clive Fernandes (UTS "Fire Safety Team", 2025).
